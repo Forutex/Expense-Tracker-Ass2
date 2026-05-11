@@ -72,7 +72,7 @@ def login(user: UserLogin):
         log_activity(
             db,
             existing_user.id,
-            "login",
+            "Login",
             "User logged in"
         )
 
