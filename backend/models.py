@@ -47,5 +47,5 @@ class UserActivity(Base):
 
     action = Column(String(100), nullable=False)
     detail = Column(Text, nullable=True)
-
+    
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
