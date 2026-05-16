@@ -15,8 +15,8 @@ Design rationale:
   distinguish "not logged in" from "logged in but not allowed".
 """
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
@@ -25,21 +25,14 @@ from database import get_db
 from models import User
 
 
-# Tells FastAPI to expect a Bearer token in the Authorization header.
-# tokenUrl is used by Swagger UI's "Authorize" button to know where to log in.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+http_bearer = HTTPBearer()
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Security(http_bearer),
     db: Session = Depends(get_db),
 ) -> User:
-    """
-    Decode the JWT, look up the user, and return them.
-
-    Raises 401 if the token is missing, invalid, expired, or the user
-    no longer exists in the database.
-    """
+    token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
