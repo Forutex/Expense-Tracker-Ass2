@@ -33,12 +33,6 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     token = credentials.credentials
-    """
-    Decode the JWT, look up the user, and return them.
-
-    Raises 401 if the token is missing, invalid, expired, or the user
-    no longer exists in the database.
-    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
