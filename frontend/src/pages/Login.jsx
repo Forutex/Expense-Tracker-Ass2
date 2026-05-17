@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+<<<<<<< Updated upstream
+=======
+import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+>>>>>>> Stashed changes
 
 const welcomeMessage =
   "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
@@ -21,13 +26,44 @@ function Login() {
     }));
   };
 
+<<<<<<< Updated upstream
   const handleLogin = (e) => {
+=======
+  const handleLogin = async (e) => {
+    
+>>>>>>> Stashed changes
     e.preventDefault();
 
     // Simulated login
     console.log(loginForm);
 
+<<<<<<< Updated upstream
     navigate("/dashboard");
+=======
+      if (!res.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const data = await res.json();
+
+      // save JWT token
+      localStorage.setItem("token", data.access_token);
+
+      // decodes user info from token
+      const decoded = jwtDecode(data.access_token);
+
+      // stores user info 
+      localStorage.setItem("user", JSON.stringify(decoded));
+
+      console.log("Login successful");
+
+      navigate("/dashboard");
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Login failed. Please check your details.");
+    }
+>>>>>>> Stashed changes
   };
 
   return (

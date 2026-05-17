@@ -4,9 +4,11 @@ import ExpenseActions from "../components/ExpenseActions";
 import ExpenseDetails from "../components/ExpenseDetails";
 import CategorySummary from "../components/CategorySummary";
 import Trends from "../components/Trends";
+import { useNavigate } from "react-router-dom";
 
 function ExpenseTracker() {
   const today = new Date();
+  const navigate = useNavigate();
 
   const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -128,12 +130,28 @@ function ExpenseTracker() {
 
   const fetchExpenses = async () => {
     try {
+<<<<<<< Updated upstream
       const res = await fetch(`${API_BASE_URL}/expenses`);
 
+=======
+      const token = localStorage.getItem("token");
+  
+      const res = await fetch(`${API_BASE_URL}/expenses`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
+  
+>>>>>>> Stashed changes
       if (!res.ok) {
         throw new Error("Failed to fetch expenses");
       }
-
+  
       const data = await res.json();
       setExpenses(data);
     } catch (error) {
@@ -141,14 +159,20 @@ function ExpenseTracker() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
   const handleSave = async () => {
     const errors = validateForm();
-
+  
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
     }
-
+  
     const newExpense = {
       date: formData.date,
       title: formData.title,
@@ -156,8 +180,13 @@ function ExpenseTracker() {
       amount: Number(formData.amount),
       description: formData.description,
     };
-
+  
     try {
+<<<<<<< Updated upstream
+=======
+      const token = localStorage.getItem("token");
+  
+>>>>>>> Stashed changes
       const res = await fetch(`${API_BASE_URL}/expenses`, {
         method: "POST",
         headers: {
@@ -165,13 +194,18 @@ function ExpenseTracker() {
         },
         body: JSON.stringify(newExpense),
       });
-
+  
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
+  
       if (!res.ok) {
         throw new Error("Failed to create expense");
       }
-
+  
       const createdExpense = await res.json();
-
+  
       setExpenses((prev) => [...prev, createdExpense]);
       setFormErrors({});
       setFormData({
@@ -206,12 +240,12 @@ function ExpenseTracker() {
 
   const handleEditSave = async () => {
     const errors = validateEditForm();
-
+  
     if (Object.keys(errors).length > 0) {
       setEditErrors(errors);
       return;
     }
-
+  
     const updatedExpense = {
       date: editFormData.date,
       title: editFormData.title,
@@ -219,8 +253,13 @@ function ExpenseTracker() {
       amount: Number(editFormData.amount),
       description: editFormData.description,
     };
-
+  
     try {
+<<<<<<< Updated upstream
+=======
+      const token = localStorage.getItem("token");
+  
+>>>>>>> Stashed changes
       const res = await fetch(
         `${API_BASE_URL}/expenses/${selectedExpenseId}`,
         {
@@ -231,19 +270,26 @@ function ExpenseTracker() {
           body: JSON.stringify(updatedExpense),
         }
       );
-
+  
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
+  
       if (!res.ok) {
         throw new Error("Failed to update expense");
       }
-
+  
       const savedExpense = await res.json();
-
+  
       setExpenses((prev) =>
         prev.map((expense) =>
-          expense.id === Number(selectedExpenseId) ? savedExpense : expense
+          expense.id === Number(selectedExpenseId)
+            ? savedExpense
+            : expense
         )
       );
-
+  
       setEditErrors({});
     } catch (error) {
       console.error("Failed to update expense:", error);
@@ -252,20 +298,42 @@ function ExpenseTracker() {
 
   const handleDelete = async () => {
     if (!deleteExpenseId) return;
-
+  
     try {
+<<<<<<< Updated upstream
       const res = await fetch(`${API_BASE_URL}/expenses/${deleteExpenseId}`, {
         method: "DELETE",
       });
 
+=======
+      const token = localStorage.getItem("token");
+  
+      const res = await fetch(
+        `${API_BASE_URL}/expenses/${deleteExpenseId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
+  
+>>>>>>> Stashed changes
       if (!res.ok) {
         throw new Error("Failed to delete expense");
       }
-
+  
       setExpenses((prev) =>
-        prev.filter((expense) => expense.id !== Number(deleteExpenseId))
+        prev.filter(
+          (expense) => expense.id !== Number(deleteExpenseId)
+        )
       );
-
+  
       setDeleteExpenseId("");
       setIsConfirmingDelete(false);
     } catch (error) {
@@ -469,6 +537,7 @@ function ExpenseTracker() {
         yearOptions={yearOptions}
         monthOptions={monthOptions}
         getDayOptions={getDayOptions}
+        handleLogout={handleLogout}
       />
 
       <ExpenseActions
