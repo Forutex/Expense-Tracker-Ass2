@@ -25,6 +25,11 @@
   gap: 8px;
 }
 
+.input-group label {
+  font-size: 0.9rem;
+  color: var(--text-h);
+}
+
 .loginform {
   display: flex;
   flex-direction: column;
