@@ -4,9 +4,18 @@ import ExpenseActions from "../components/ExpenseActions";
 import ExpenseDetails from "../components/ExpenseDetails";
 import CategorySummary from "../components/CategorySummary";
 import Trends from "../components/Trends";
+import { useNavigate } from "react-router-dom";
 
 function ExpenseTracker() {
+
   const today = new Date();
+  const navigate = useNavigate();
+
+  const handleAuthError = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
 
   const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -136,6 +145,11 @@ function ExpenseTracker() {
         },
       });
 
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
+
       if (!res.ok) {
         throw new Error("Failed to fetch expenses");
       }
@@ -145,6 +159,12 @@ function ExpenseTracker() {
     } catch (error) {
       console.error("Failed to fetch expenses:", error);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
   const handleSave = async () => {
@@ -174,6 +194,11 @@ function ExpenseTracker() {
         },
         body: JSON.stringify(newExpense),
       });
+
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to create expense");
@@ -231,6 +256,7 @@ function ExpenseTracker() {
 
     try {
       const token = localStorage.getItem("token");
+
       const res = await fetch(
         `${API_BASE_URL}/expenses/${selectedExpenseId}`,
         {
@@ -243,6 +269,11 @@ function ExpenseTracker() {
         }
       );
 
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
+
       if (!res.ok) {
         throw new Error("Failed to update expense");
       }
@@ -251,7 +282,9 @@ function ExpenseTracker() {
 
       setExpenses((prev) =>
         prev.map((expense) =>
-          expense.id === Number(selectedExpenseId) ? savedExpense : expense
+          expense.id === Number(selectedExpenseId)
+            ? savedExpense
+            : expense
         )
       );
 
@@ -267,19 +300,29 @@ function ExpenseTracker() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`${API_BASE_URL}/expenses/${deleteExpenseId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `${API_BASE_URL}/expenses/${deleteExpenseId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.status === 401) {
+        handleAuthError();
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to delete expense");
       }
 
       setExpenses((prev) =>
-        prev.filter((expense) => expense.id !== Number(deleteExpenseId))
+        prev.filter(
+          (expense) => expense.id !== Number(deleteExpenseId)
+        )
       );
 
       setDeleteExpenseId("");
@@ -298,26 +341,26 @@ function ExpenseTracker() {
     const expenseYear = expenseDate.getFullYear();
     const expenseMonth = expenseDate.getMonth() + 1;
     const expenseDay = expenseDate.getDate();
-  
+
     let matchesPeriod = false;
-  
+
     if (viewMode === "day") {
       matchesPeriod =
         expenseYear === selectedPeriod.year &&
         expenseMonth === selectedPeriod.month &&
         expenseDay === selectedPeriod.day;
     }
-  
+
     if (viewMode === "month") {
       matchesPeriod =
         expenseYear === selectedPeriod.year &&
         expenseMonth === selectedPeriod.month;
     }
-  
+
     if (viewMode === "year") {
       matchesPeriod = expenseYear === selectedPeriod.year;
     }
-  
+
     return matchesPeriod;
   });
 
@@ -485,6 +528,7 @@ function ExpenseTracker() {
         yearOptions={yearOptions}
         monthOptions={monthOptions}
         getDayOptions={getDayOptions}
+        handleLogout={handleLogout}
       />
 
       <ExpenseActions
