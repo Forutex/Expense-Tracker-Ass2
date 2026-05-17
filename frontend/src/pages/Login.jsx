@@ -9,7 +9,7 @@ function Login() {
   const navigate = useNavigate();
 
   const [loginForm, setLoginForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -68,14 +68,14 @@ function Login() {
 
           <form className="loginform" onSubmit={handleLogin}>
             <div className="input-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
 
               <input
-                id="username"
-                type="text"
-                name="username"
-                placeholder="Enter username"
-                value={loginForm.username}
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={loginForm.email}
                 onChange={handleInputChange}
               />
             </div>
@@ -92,6 +92,12 @@ function Login() {
                 onChange={handleInputChange}
               />
             </div>
+
+            {errorMessage && (
+              <p className="error-message">
+                {errorMessage}
+              </p>
+            )}
 
             <button type="submit">
               Log In
