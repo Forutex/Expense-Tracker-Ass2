@@ -128,7 +128,13 @@ function ExpenseTracker() {
 
   const fetchExpenses = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/expenses`);
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_BASE_URL}/expenses`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         throw new Error("Failed to fetch expenses");
@@ -158,10 +164,13 @@ function ExpenseTracker() {
     };
 
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(`${API_BASE_URL}/expenses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newExpense),
       });
@@ -221,12 +230,14 @@ function ExpenseTracker() {
     };
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(
         `${API_BASE_URL}/expenses/${selectedExpenseId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(updatedExpense),
         }
@@ -254,8 +265,13 @@ function ExpenseTracker() {
     if (!deleteExpenseId) return;
 
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(`${API_BASE_URL}/expenses/${deleteExpenseId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {
