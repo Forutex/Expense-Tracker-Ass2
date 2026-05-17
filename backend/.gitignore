@@ -1,0 +1,21 @@
+# Environment variables (NEVER commit)
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
