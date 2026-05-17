@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< Updated upstream
-=======
-import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
->>>>>>> Stashed changes
 
 const welcomeMessage =
   "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
@@ -17,6 +13,8 @@ function Login() {
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -26,44 +24,37 @@ function Login() {
     }));
   };
 
-<<<<<<< Updated upstream
-  const handleLogin = (e) => {
-=======
   const handleLogin = async (e) => {
-    
->>>>>>> Stashed changes
     e.preventDefault();
 
-    // Simulated login
-    console.log(loginForm);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginForm),
+      });
 
-<<<<<<< Updated upstream
-    navigate("/dashboard");
-=======
       if (!res.ok) {
         throw new Error("Invalid email or password");
       }
 
       const data = await res.json();
 
-      // save JWT token
       localStorage.setItem("token", data.access_token);
 
-      // decodes user info from token
       const decoded = jwtDecode(data.access_token);
 
-      // stores user info 
       localStorage.setItem("user", JSON.stringify(decoded));
 
       console.log("Login successful");
 
       navigate("/dashboard");
-
     } catch (error) {
       console.error(error);
       setErrorMessage("Login failed. Please check your details.");
     }
->>>>>>> Stashed changes
   };
 
   return (
@@ -105,11 +96,15 @@ function Login() {
             <button type="submit">
               Log In
             </button>
+
+            {errorMessage && (
+              <p style={{ color: "red" }}>{errorMessage}</p>
+            )}
           </form>
 
           <p>
             Don't have an account?{" "}
-            <a href="#">Sign up</a>
+            <a href="/signup">Sign up</a>
           </p>
         </div>
       </div>
