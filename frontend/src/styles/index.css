@@ -57,8 +57,26 @@
 
 /*expense tracker*/
 
+.search {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.search input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
 .top-bar,
 .middle-bar,
+.search,
 .overviews,
 .trends {
   width: 100%;

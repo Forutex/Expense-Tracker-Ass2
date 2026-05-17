@@ -86,6 +86,8 @@ function ExpenseTracker() {
 
   const [expenses, setExpenses] = useState([]);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const validateForm = () => {
     const errors = {};
 
@@ -278,27 +280,32 @@ function ExpenseTracker() {
     const expenseYear = expenseDate.getFullYear();
     const expenseMonth = expenseDate.getMonth() + 1;
     const expenseDay = expenseDate.getDate();
-
+  
+    let matchesPeriod = false;
+  
     if (viewMode === "day") {
-      return (
+      matchesPeriod =
         expenseYear === selectedPeriod.year &&
         expenseMonth === selectedPeriod.month &&
-        expenseDay === selectedPeriod.day
-      );
+        expenseDay === selectedPeriod.day;
     }
-
+  
     if (viewMode === "month") {
-      return (
+      matchesPeriod =
         expenseYear === selectedPeriod.year &&
-        expenseMonth === selectedPeriod.month
-      );
+        expenseMonth === selectedPeriod.month;
     }
-
+  
     if (viewMode === "year") {
-      return expenseYear === selectedPeriod.year;
+      matchesPeriod =
+        expenseYear === selectedPeriod.year;
     }
-
-    return false;
+  
+    // searches by title
+    const matchesSearch =
+      expense.title.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    return matchesPeriod && matchesSearch;
   });
 
   const totalAmount = filteredExpenses.reduce((sum, expense) => {
@@ -477,6 +484,17 @@ function ExpenseTracker() {
         setIsConfirmingDelete={setIsConfirmingDelete}
         handleDelete={handleDelete}
       />
+
+      <section className="search">
+        <h2>Search Expenses</h2>
+
+        <input
+        type = "text"
+        placeholder = "Search by title"
+        value = {searchQuery}
+        onChange = {(e) => setSearchQuery(e.target.value)}
+        />
+      </section>
 
       <section className="overviews">
         <h2>Overviews</h2>
