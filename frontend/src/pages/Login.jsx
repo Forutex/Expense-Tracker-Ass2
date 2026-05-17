@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const welcomeMessage =
   "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
@@ -8,9 +9,11 @@ function Login() {
   const navigate = useNavigate();
 
   const [loginForm, setLoginForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,13 +24,38 @@ function Login() {
     }));
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Simulated login
-    console.log(loginForm);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginForm.email,
+          password: loginForm.password,
+        }),
+      });
 
-    navigate("/dashboard");
+      if (!res.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const data = await res.json();
+
+      // save JWT token
+      localStorage.setItem("token", data.access_token);
+
+      console.log("Login successful");
+
+      navigate("/dashboard");
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Login failed. Please check your details.");
+    }
   };
 
   return (
@@ -41,14 +69,14 @@ function Login() {
 
           <form className="loginform" onSubmit={handleLogin}>
             <div className="input-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
 
               <input
-                id="username"
-                type="text"
-                name="username"
-                placeholder="Enter username"
-                value={loginForm.username}
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={loginForm.email}
                 onChange={handleInputChange}
               />
             </div>
@@ -66,6 +94,12 @@ function Login() {
               />
             </div>
 
+            {errorMessage && (
+              <p className="error-message">
+                {errorMessage}
+              </p>
+            )}
+
             <button type="submit">
               Log In
             </button>
@@ -73,7 +107,7 @@ function Login() {
 
           <p>
             Don't have an account?{" "}
-            <a href="#">Sign up</a>
+            <Link to="/signup">Sign up</Link>
           </p>
         </div>
       </div>
