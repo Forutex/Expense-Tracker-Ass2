@@ -301,6 +301,7 @@ function ExpenseTracker() {
         expenseYear === selectedPeriod.year;
     }
   
+    // searches by title
     const matchesSearch =
       expense.title.toLowerCase().includes(searchQuery.toLowerCase());
   
