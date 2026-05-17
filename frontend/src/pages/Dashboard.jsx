@@ -88,6 +88,8 @@ function ExpenseTracker() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  const isSearching = searchQuery.trim().length > 0;
+
   const validateForm = () => {
     const errors = {};
 
@@ -297,15 +299,22 @@ function ExpenseTracker() {
     }
   
     if (viewMode === "year") {
-      matchesPeriod =
-        expenseYear === selectedPeriod.year;
+      matchesPeriod = expenseYear === selectedPeriod.year;
     }
   
-    // searches by title
-    const matchesSearch =
-      expense.title.toLowerCase().includes(searchQuery.toLowerCase());
-  
-    return matchesPeriod && matchesSearch;
+    return matchesPeriod;
+  });
+
+  const searchResults = filteredExpenses.filter((expense) => {
+    if (!isSearching) return false;
+
+    const q = searchQuery.toLowerCase();
+
+    return (
+      expense.title.toLowerCase().includes(q) ||
+      expense.category.toLowerCase().includes(q) ||
+      (expense.description?.toLowerCase().includes(q) ?? false)
+    );
   });
 
   const totalAmount = filteredExpenses.reduce((sum, expense) => {
@@ -499,7 +508,9 @@ function ExpenseTracker() {
       <section className="overviews">
         <h2>Overviews</h2>
 
-        <ExpenseDetails filteredExpenses={filteredExpenses} />
+        <ExpenseDetails 
+          filteredExpenses={isSearching ? searchResults : filteredExpenses}
+        />
 
         <CategorySummary categorySummaryData={categorySummaryData} />
       </section>
