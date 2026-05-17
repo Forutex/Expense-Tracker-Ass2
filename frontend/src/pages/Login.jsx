@@ -1,16 +1,11 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const welcomeMessage = "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
+const welcomeMessage =
+  "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
 
 function Login() {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    // Simulate login logic here (e.g., API call)
-    // For demonstration, we'll just navigate to the dashboard
-    navigate("/dashboard");
-  };
 
   const [loginForm, setLoginForm] = useState({
     username: "",
@@ -19,22 +14,70 @@ function Login() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setLoginForm((prev) => ({ ...prev, [name]: value }));
+
+    setLoginForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // Simulated login
+    console.log(loginForm);
+
+    navigate("/dashboard");
   };
 
   return (
-    <><div className="app">
-      <h1>Expense Tracker</h1>
-      {welcomeMessage}
-    </div><div className="login-container">
-      <h2>Login</h2>
-      <input type="text" placeholder="Username" />
-      <input type="password" placeholder="Password" />
-      <button className="login-action" onClick={handleLogin}>
-        Log In
-      </button>
-      <p>Don't have an account? <a href="#">Sign up</a></p>
-      </div></>
+    <div className="app">
+      <div className="login-container">
+        <div className="login">
+          <header>
+            <h1>Expense Tracker</h1>
+            <p>{welcomeMessage}</p>
+          </header>
+
+          <form className="loginform" onSubmit={handleLogin}>
+            <div className="input-group">
+              <label htmlFor="username">Username</label>
+
+              <input
+                id="username"
+                type="text"
+                name="username"
+                placeholder="Enter username"
+                value={loginForm.username}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="password">Password</label>
+
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                value={loginForm.password}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <button type="submit">
+              Log In
+            </button>
+          </form>
+
+          <p>
+            Don't have an account?{" "}
+            <a href="#">Sign up</a>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
