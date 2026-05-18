@@ -47,10 +47,15 @@ function Login() {
       const decoded = jwtDecode(data.access_token);
 
       localStorage.setItem("user", JSON.stringify(decoded));
+      
+      if (decoded.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
 
       console.log("Login successful");
 
-      navigate("/dashboard");
     } catch (error) {
       console.error(error);
       setErrorMessage("Login failed. Please check your details.");

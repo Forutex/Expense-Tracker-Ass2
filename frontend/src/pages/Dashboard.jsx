@@ -517,6 +517,9 @@ function ExpenseTracker() {
     <div className="app">
       <header className="header">
         <h1>Expense Tracker</h1>
+        <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
       </header>
 
       <TopBar
