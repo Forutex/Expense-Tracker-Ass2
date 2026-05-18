@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
 from database import SessionLocal
 from middleware.auth_middleware import admin_required
-from models import User, UserActivity
-from schemas import ActivityResponse, UserResponse, UserUpdate
+from models import User, UserActivity, Expense
+from schemas import ActivityResponse, ExpenseResponse, UserResponse, UserUpdate
 
 router = APIRouter(
     prefix="/admin",
@@ -15,12 +15,24 @@ router = APIRouter(
 
 @router.get("/users", response_model=List[UserResponse])
 def get_all_users(
+    search: Optional[str] = None,
     current_admin=Depends(admin_required)
 ):
     db = SessionLocal()
 
     try:
-        users = db.query(User).order_by(User.id.asc()).all()
+        query = db.query(User)
+
+        if search:
+            search_text = f"%{search}%"
+
+            query = query.filter(
+                (User.username.like(search_text)) |
+                (User.email.like(search_text)) |
+                (User.role.like(search_text))
+            )
+
+        users = query.order_by(User.id.asc()).all()
         return users
 
     finally:
@@ -124,6 +136,46 @@ def get_all_activities(
         ).all()
 
         return activities
+
+    finally:
+        db.close()
+
+@router.get("/users/{user_id}/expenses", response_model=List[ExpenseResponse])
+def get_user_expenses(
+    user_id: int,
+    search: Optional[str] = None,
+    current_admin=Depends(admin_required)
+):
+    db = SessionLocal()
+
+    try:
+        existing_user = db.query(User).filter(User.id == user_id).first()
+
+        if not existing_user:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found"
+            )
+
+        query = db.query(Expense).filter(
+            Expense.user_id == user_id
+        )
+
+        if search:
+            search_text = f"%{search}%"
+
+            query = query.filter(
+                (Expense.title.like(search_text)) |
+                (Expense.category.like(search_text)) |
+                (Expense.description.like(search_text))
+            )
+
+        expenses = query.order_by(
+            Expense.date.desc(),
+            Expense.id.desc()
+        ).all()
+
+        return expenses
 
     finally:
         db.close()
