@@ -1,3 +1,4 @@
+#Declaring the structure of the database tables on Python classes.
 from sqlalchemy import (
     Column,
     Date,
