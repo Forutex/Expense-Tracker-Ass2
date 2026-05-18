@@ -74,7 +74,7 @@ def create_expense(
 
     return new_expense
 
-#updating expences
+#updating expenses
 @router.put("/{expense_id}", response_model=ExpenseResponse)
 def update_expense(
     expense_id: int,
