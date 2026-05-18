@@ -1,3 +1,5 @@
+#user registration and login, password hashing, JWT token generation, and activity logging for authentication events.
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
