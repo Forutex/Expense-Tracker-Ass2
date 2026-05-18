@@ -1,3 +1,5 @@
+#CRUD, Search, recording operation logs
+
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,7 +16,7 @@ router = APIRouter(
     tags=["Expenses"]
 )
 
-
+#getting all expenses based on userID
 @router.get("/", response_model=List[ExpenseResponse])
 def get_expenses(
     search: Optional[str] = None,
@@ -41,7 +43,7 @@ def get_expenses(
 
     return expenses
 
-
+#creating new expense
 @router.post("/", response_model=ExpenseResponse)
 def create_expense(
     expense: ExpenseCreate,
@@ -72,7 +74,7 @@ def create_expense(
 
     return new_expense
 
-
+#updating expences
 @router.put("/{expense_id}", response_model=ExpenseResponse)
 def update_expense(
     expense_id: int,
@@ -109,7 +111,7 @@ def update_expense(
 
     return existing_expense
 
-
+#deleting expenses
 @router.delete("/{expense_id}")
 def delete_expense(
     expense_id: int,

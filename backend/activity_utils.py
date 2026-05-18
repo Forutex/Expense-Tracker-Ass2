@@ -1,6 +1,5 @@
 from models import UserActivity
 
-
 def log_activity(db, user_id: int, action: str, detail: str = ""):
     activity = UserActivity(
         user_id=user_id,
@@ -8,4 +7,4 @@ def log_activity(db, user_id: int, action: str, detail: str = ""):
         detail=detail
     )
 
-    db.add(activity)
+    db.add(activity) # To record the activity in the database
