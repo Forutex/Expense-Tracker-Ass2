@@ -1,8 +1,9 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-from database import SessionLocal
+from database import get_db
 from middleware.auth_middleware import admin_required
 from models import User, UserActivity, Expense
 from schemas import ActivityResponse, ExpenseResponse, UserResponse, UserUpdate
@@ -16,166 +17,142 @@ router = APIRouter(
 @router.get("/users", response_model=List[UserResponse])
 def get_all_users(
     search: Optional[str] = None,
-    current_admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
+    db: Session = Depends(get_db)
 ):
-    db = SessionLocal()
+    query = db.query(User)
 
-    try:
-        query = db.query(User)
+    if search:
+        search_text = f"%{search}%"
 
-        if search:
-            search_text = f"%{search}%"
+        query = query.filter(
+            (User.username.like(search_text)) |
+            (User.email.like(search_text)) |
+            (User.role.like(search_text))
+        )
 
-            query = query.filter(
-                (User.username.like(search_text)) |
-                (User.email.like(search_text)) |
-                (User.role.like(search_text))
-            )
-
-        users = query.order_by(User.id.asc()).all()
-        return users
-
-    finally:
-        db.close()
+    users = query.order_by(User.id.asc()).all()
+    return users
 
 
 @router.put("/users/{user_id}", response_model=UserResponse)
 def update_user(
     user_id: int,
     user_update: UserUpdate,
-    current_admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
+    db: Session = Depends(get_db)
 ):
-    db = SessionLocal()
+    existing_user = db.query(User).filter(User.id == user_id).first()
 
-    try:
-        existing_user = db.query(User).filter(User.id == user_id).first()
+    if not existing_user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
-        if not existing_user:
+    if user_update.username is not None:
+        existing_user.username = user_update.username
+
+    if user_update.email is not None:
+        duplicate_email_user = db.query(User).filter(
+            User.email == user_update.email,
+            User.id != user_id
+        ).first()
+
+        if duplicate_email_user:
             raise HTTPException(
-                status_code=404,
-                detail="User not found"
+                status_code=400,
+                detail="Email already used by another user"
             )
 
-        if user_update.username is not None:
-            existing_user.username = user_update.username
+        existing_user.email = user_update.email
 
-        if user_update.email is not None:
-            duplicate_email_user = db.query(User).filter(
-                User.email == user_update.email,
-                User.id != user_id
-            ).first()
+    if user_update.role is not None:
+        if user_update.role not in ["user", "admin"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Role must be either 'user' or 'admin'"
+            )
 
-            if duplicate_email_user:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Email already used by another user"
-                )
+        existing_user.role = user_update.role
 
-            existing_user.email = user_update.email
+    db.commit()
+    db.refresh(existing_user)
 
-        if user_update.role is not None:
-            if user_update.role not in ["user", "admin"]:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Role must be either 'user' or 'admin'"
-                )
-
-            existing_user.role = user_update.role
-
-        db.commit()
-        db.refresh(existing_user)
-
-        return existing_user
-
-    finally:
-        db.close()
+    return existing_user
 
 
 @router.delete("/users/{user_id}")
 def delete_user(
     user_id: int,
-    current_admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
+    db: Session = Depends(get_db)
 ):
-    db = SessionLocal()
+    existing_user = db.query(User).filter(User.id == user_id).first()
 
-    try:
-        existing_user = db.query(User).filter(User.id == user_id).first()
+    if not existing_user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
 
-        if not existing_user:
-            raise HTTPException(
-                status_code=404,
-                detail="User not found"
-            )
+    if existing_user.id == current_admin.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Admin cannot delete their own account"
+        )
 
-        if existing_user.id == current_admin.id:
-            raise HTTPException(
-                status_code=400,
-                detail="Admin cannot delete their own account"
-            )
+    db.delete(existing_user)
+    db.commit()
 
-        db.delete(existing_user)
-        db.commit()
-
-        return {
-            "message": "User deleted successfully"
-        }
-
-    finally:
-        db.close()
+    return {
+        "message": "User deleted successfully"
+    }
 
 
 @router.get("/activities", response_model=List[ActivityResponse])
 def get_all_activities(
-    current_admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
+    db: Session = Depends(get_db)
 ):
-    db = SessionLocal()
+    activities = db.query(UserActivity).order_by(
+        UserActivity.created_at.desc()
+    ).all()
 
-    try:
-        activities = db.query(UserActivity).order_by(
-            UserActivity.created_at.desc()
-        ).all()
+    return activities
 
-        return activities
-
-    finally:
-        db.close()
 
 @router.get("/users/{user_id}/expenses", response_model=List[ExpenseResponse])
 def get_user_expenses(
     user_id: int,
     search: Optional[str] = None,
-    current_admin=Depends(admin_required)
+    current_admin=Depends(admin_required),
+    db: Session = Depends(get_db)
 ):
-    db = SessionLocal()
+    existing_user = db.query(User).filter(User.id == user_id).first()
 
-    try:
-        existing_user = db.query(User).filter(User.id == user_id).first()
-
-        if not existing_user:
-            raise HTTPException(
-                status_code=404,
-                detail="User not found"
-            )
-
-        query = db.query(Expense).filter(
-            Expense.user_id == user_id
+    if not existing_user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
         )
 
-        if search:
-            search_text = f"%{search}%"
+    query = db.query(Expense).filter(
+        Expense.user_id == user_id
+    )
 
-            query = query.filter(
-                (Expense.title.like(search_text)) |
-                (Expense.category.like(search_text)) |
-                (Expense.description.like(search_text))
-            )
+    if search:
+        search_text = f"%{search}%"
 
-        expenses = query.order_by(
-            Expense.date.desc(),
-            Expense.id.desc()
-        ).all()
+        query = query.filter(
+            (Expense.title.like(search_text)) |
+            (Expense.category.like(search_text)) |
+            (Expense.description.like(search_text))
+        )
 
-        return expenses
+    expenses = query.order_by(
+        Expense.date.desc(),
+        Expense.id.desc()
+    ).all()
 
-    finally:
-        db.close()
+    return expenses
