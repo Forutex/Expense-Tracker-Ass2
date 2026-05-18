@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const welcomeMessage =
   "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
@@ -33,10 +33,7 @@ function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: loginForm.email,
-          password: loginForm.password,
-        }),
+        body: JSON.stringify(loginForm),
       });
 
       if (!res.ok) {
@@ -45,18 +42,47 @@ function Login() {
 
       const data = await res.json();
 
-      // save JWT token
       localStorage.setItem("token", data.access_token);
+
+      const decoded = jwtDecode(data.access_token);
+
+      localStorage.setItem("user", JSON.stringify(decoded));
 
       console.log("Login successful");
 
       navigate("/dashboard");
-
     } catch (error) {
       console.error(error);
       setErrorMessage("Login failed. Please check your details.");
     }
   };
+
+  /* temporary login for testing
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    if (
+      loginForm.email === "test@test.com" &&
+      loginForm.password === "password123"
+    ) {
+      const fakeToken = "fake-jwt-token";
+  
+      localStorage.setItem("token", fakeToken);
+  
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: 1,
+          username: "Test User",
+          email: "test@test.com",
+        })
+      );
+  
+      navigate("/dashboard");
+    } else {
+      setErrorMessage("Invalid login");
+    }
+  };*/
 
   return (
     <div className="app">
@@ -103,11 +129,15 @@ function Login() {
             <button type="submit">
               Log In
             </button>
+
+            {errorMessage && (
+              <p style={{ color: "red" }}>{errorMessage}</p>
+            )}
           </form>
 
           <p>
             Don't have an account?{" "}
-            <Link to="/signup">Sign up</Link>
+            <a href="/signup">Sign up</a>
           </p>
         </div>
       </div>
