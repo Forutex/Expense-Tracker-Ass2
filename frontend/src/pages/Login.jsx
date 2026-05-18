@@ -24,7 +24,7 @@ function Login() {
     }));
   };
 
-  const handleLogin = async (e) => {
+  /*const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
@@ -54,6 +54,33 @@ function Login() {
     } catch (error) {
       console.error(error);
       setErrorMessage("Login failed. Please check your details.");
+    }
+  };*/
+
+  /* temporary login for testing */
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    if (
+      loginForm.email === "test@test.com" &&
+      loginForm.password === "password123"
+    ) {
+      const fakeToken = "fake-jwt-token";
+  
+      localStorage.setItem("token", fakeToken);
+  
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: 1,
+          username: "Test User",
+          email: "test@test.com",
+        })
+      );
+  
+      navigate("/dashboard");
+    } else {
+      setErrorMessage("Invalid login");
     }
   };
 
