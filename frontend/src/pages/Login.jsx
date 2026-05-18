@@ -24,11 +24,11 @@ function Login() {
     }));
   };
 
-  /*const handleLogin = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/login", {
+      const res = await fetch("http://127.0.0.1:8000/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,9 +55,9 @@ function Login() {
       console.error(error);
       setErrorMessage("Login failed. Please check your details.");
     }
-  };*/
+  };
 
-  /* temporary login for testing */
+  /* temporary login for testing
   const handleLogin = async (e) => {
     e.preventDefault();
   
@@ -82,7 +82,7 @@ function Login() {
     } else {
       setErrorMessage("Invalid login");
     }
-  };
+  };*/
 
   return (
     <div className="app">
