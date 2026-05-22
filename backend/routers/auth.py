@@ -1,6 +1,7 @@
 #user registration and login, password hashing, JWT token generation, and activity logging for authentication events.
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from activity_utils import log_activity
@@ -57,6 +58,10 @@ def login(
     user: UserLogin,
     db: Session = Depends(get_db)
 ):
+    """
+    JSON-based login for the frontend (React/axios).
+    Accepts {"email": "...", "password": "..."} and returns a JWT.
+    """
     existing_user = db.query(User).filter(User.email == user.email).first()
 
     if not existing_user:
@@ -84,6 +89,52 @@ def login(
         existing_user.id,
         "login",
         "User logged in"
+    )
+
+    db.commit()
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+@router.post("/token", response_model=TokenResponse)
+def login_for_swagger(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    """
+    OAuth2-compatible login endpoint for Swagger UI's "Authorize" button.
+
+    Accepts form-data (username + password) as required by the OAuth2 spec.
+    The 'username' field here actually receives the user's email.
+
+    Frontend should use /auth/login (JSON) instead. This endpoint exists
+    purely to enable interactive API testing in Swagger UI.
+    """
+    existing_user = db.query(User).filter(User.email == form_data.username).first()
+
+    if not existing_user or not verify_password(form_data.password, existing_user.hashed_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token = create_access_token(
+        data={
+            "sub": existing_user.email,
+            "user_id": existing_user.id,
+            "role": existing_user.role
+        }
+    )
+
+    log_activity(
+        db,
+        existing_user.id,
+        "login",
+        "User logged in (via Swagger)"
     )
 
     db.commit()
