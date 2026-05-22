@@ -4,6 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from activity_utils import log_activity
 from database import get_db
 from middleware.auth_middleware import admin_required
 from models import User, UserActivity, Expense
@@ -77,6 +78,13 @@ def update_user(
 
         existing_user.role = user_update.role
 
+    log_activity(
+        db,
+        current_admin.id,
+        "admin_update_user",
+        f"Admin updated user id: {user_id}"
+    )
+
     db.commit()
     db.refresh(existing_user)
 
@@ -102,6 +110,13 @@ def delete_user(
             status_code=400,
             detail="Admin cannot delete their own account"
         )
+
+    log_activity(
+        db,
+        current_admin.id,
+        "admin_delete_user",
+        f"Admin deleted user id: {user_id} ({existing_user.email})"
+    )
 
     db.delete(existing_user)
     db.commit()
