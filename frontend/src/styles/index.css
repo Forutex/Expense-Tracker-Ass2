@@ -2,7 +2,7 @@
 .login-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   padding: 24px;
 }
 
@@ -74,15 +74,33 @@
 
 /*expense tracker*/
 
-.page-header {
+.view-mode-controls {
   display: flex;
-  justify-content: flex-end; /* pushes button to the right */
-  padding: 20px 24px 10px;   /* creates space ABOVE and around */
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.logout-btn {
-  padding: 8px 14px;
-  cursor: pointer;
+.trends-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.page-header {
+  display: flex;
+  justify-content: flex-end; 
+  padding: 20px 24px 10px;  
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+}
+
+.header h1 {
+  margin: 0;
 }
 
 .search {
@@ -454,4 +472,106 @@ p {
 
 * {
   box-sizing: border-box;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+.expense-table,
+.category-content {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+
+  #root {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .app {
+    gap: 16px;
+    padding: 0;
+  }
+
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logout-btn {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    align-self: flex-end;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .top-left,
+  .top-right {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .periods-controls {
+    flex-wrap: wrap;
+  }
+
+  .add-form {
+    grid-template-columns: 1fr;
+  }
+
+  .overviews {
+    grid-template-columns: 1fr;
+  }
+
+  .details-header,
+  .details-row {
+    grid-template-columns: 1fr 1fr;
+    font-size: 0.9rem;
+  }
+
+  .category-summary-header,
+  .category-summary-row {
+    grid-template-columns: 1fr 1fr;
+    font-size: 0.9rem;
+  }
+
+  .expense-details,
+  .category-summary {
+    min-height: auto;
+    max-height: none;
+  }
+
+  .expense-action {
+    flex-direction: column;
+  }
+
+  .search,
+  .top-bar,
+  .middle-bar,
+  .overviews,
+  .trends {
+    padding: 16px;
+  }
+
+  .total-summary {
+    font-size: 1.5rem;
+  }
+
+  .view-mode-btn,
+  .action-btn,
+  .trends-btn {
+    width: 100%;
+  }
 }
