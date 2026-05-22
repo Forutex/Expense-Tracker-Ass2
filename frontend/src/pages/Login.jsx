@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const welcomeMessage =
   "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
@@ -8,9 +9,11 @@ function Login() {
   const navigate = useNavigate();
 
   const [loginForm, setLoginForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,14 +24,70 @@ function Login() {
     }));
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Simulated login
-    console.log(loginForm);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginForm),
+      });
 
-    navigate("/dashboard");
+      if (!res.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const data = await res.json();
+
+      localStorage.setItem("token", data.access_token);
+
+      const decoded = jwtDecode(data.access_token);
+
+      localStorage.setItem("user", JSON.stringify(decoded));
+      
+      if (decoded.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+
+      console.log("Login successful");
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Login failed. Please check your details.");
+    }
   };
+
+  /* temporary login for testing
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    if (
+      loginForm.email === "test@test.com" &&
+      loginForm.password === "password123"
+    ) {
+      const fakeToken = "fake-jwt-token";
+  
+      localStorage.setItem("token", fakeToken);
+  
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: 1,
+          username: "Test User",
+          email: "test@test.com",
+        })
+      );
+  
+      navigate("/dashboard");
+    } else {
+      setErrorMessage("Invalid login");
+    }
+  };*/
 
   return (
     <div className="app">
@@ -41,14 +100,14 @@ function Login() {
 
           <form className="loginform" onSubmit={handleLogin}>
             <div className="input-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
 
               <input
-                id="username"
-                type="text"
-                name="username"
-                placeholder="Enter username"
-                value={loginForm.username}
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={loginForm.email}
                 onChange={handleInputChange}
               />
             </div>
@@ -66,14 +125,24 @@ function Login() {
               />
             </div>
 
+            {errorMessage && (
+              <p className="error-message">
+                {errorMessage}
+              </p>
+            )}
+
             <button type="submit">
               Log In
             </button>
+
+            {errorMessage && (
+              <p style={{ color: "red" }}>{errorMessage}</p>
+            )}
           </form>
 
           <p>
             Don't have an account?{" "}
-            <a href="#">Sign up</a>
+            <a href="/signup">Sign up</a>
           </p>
         </div>
       </div>

@@ -54,8 +54,36 @@
   cursor: pointer;
 }
 
+/*admin dashboard*/
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+}
+
+.logout-btn {
+  background: #c084fc;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 /*expense tracker*/
+
+.page-header {
+  display: flex;
+  justify-content: flex-end; /* pushes button to the right */
+  padding: 20px 24px 10px;   /* creates space ABOVE and around */
+}
+
+.logout-btn {
+  padding: 8px 14px;
+  cursor: pointer;
+}
 
 .search {
   width: 100%;
