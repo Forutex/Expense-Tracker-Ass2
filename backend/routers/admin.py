@@ -26,7 +26,6 @@ def get_all_users(
 
     if search:
         search_text = f"%{search}%"
-
         query = query.filter(
             (User.username.like(search_text)) |
             (User.email.like(search_text)) |
@@ -128,13 +127,26 @@ def delete_user(
 
 @router.get("/activities", response_model=List[ActivityResponse])
 def get_all_activities(
+    search: Optional[str] = None,
+    user_id: Optional[int] = None,
     current_admin=Depends(admin_required),
     db: Session = Depends(get_db)
 ):
-    activities = db.query(UserActivity).order_by(
-        UserActivity.created_at.desc()
-    ).all()
+    query = db.query(UserActivity)
 
+    if user_id:
+        query = query.filter(UserActivity.user_id == user_id)
+
+    if search:
+        search_text = f"%{search}%"
+        query = query.join(User).filter(
+            (UserActivity.action.like(search_text)) |
+            (UserActivity.detail.like(search_text)) |
+            (User.username.like(search_text)) |
+            (User.email.like(search_text))
+        )
+
+    activities = query.order_by(UserActivity.created_at.desc()).all()
     return activities
 
 
@@ -159,7 +171,6 @@ def get_user_expenses(
 
     if search:
         search_text = f"%{search}%"
-
         query = query.filter(
             (Expense.title.like(search_text)) |
             (Expense.category.like(search_text)) |
