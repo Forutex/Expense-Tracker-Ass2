@@ -1,51 +1,94 @@
-1. Project Title
+# Expense Tracker Web Application
+
+---
+
+## 1. Project Title
 
 Expense Tracker Web Application
 
-2. Problem Statement
+---
 
-This web application allows users to register what users bought with 5 elements(date, title, category, amount, and description). Only description is nullable.
-The total expenses can be seen easily based on the scope (day, month, year) that users has applied.
-users can select the specific day, month, and year.
-users can edit and delete the added items.
-Expense details and category summary can be seen easily in overview section. In category summary section, users can the percentages for each category.
-users can see trends in daily, monthly, and yearly expenditure
+## 2. Problem Statement
 
+This web application allows users to register and track their expenses with 5 elements: date, title, category, amount, and description (description is optional). 
 
-3. Technical Stack
-Frontend
-React (Vite)
+Users can:
+- View total expenses filtered by day, month, or year
+- Select a specific day, month, and year to scope their view
+- Add, edit, and delete expense entries
+- See a category summary with percentage breakdowns
+- Analyse spending trends over daily, monthly, and yearly periods
+- Register an account and log in securely
 
-Styling
-CSS (custom styling)
+---
 
-Routing
-Single-page application
+## 3. Technical Stack
 
-Data
-MySQL database
+| Layer | Technology |
+|---|---|
+| Frontend | React 19 (Vite) |
+| Routing | React Router v7 |
+| Styling | CSS (custom, with dark mode support) |
+| Backend | Python, FastAPI |
+| Authentication | JWT (JSON Web Tokens) with bcrypt password hashing |
+| Database | MySQL 8 |
+| ORM | SQLAlchemy |
 
-4. Features
-Add, edit, and delete expenses
-View total expenses by day, month, and year
-Category-based summary with percentage calculation
-Scrollable expense details section
-Trend analysis:
-Daily (last 7 days)
-Monthly (last 12 months)
-Yearly (last 5 years)
+---
 
-5. Folder Structure
-Ass1 has frontend, backend, database, and README
+## 4. Features
 
-frontend has jsx, css contents
+- User registration and login with JWT-based authentication
+- Role-based access control (user / admin)
+- Add, edit, and delete expenses
+- View total expenses scoped by day, month, or year
+- Category-based summary with percentage calculations
+- Scrollable expense details table
+- Trend analysis:
+  - Daily (last 7 days)
+  - Monthly (last 12 months)
+  - Yearly (last 5 years)
+- Admin panel: view all users, update user details, delete users, view activity logs
 
-backend has python content (API) to connect frontend to batabase
+---
 
-database has mysql
+## 5. Folder Structure
 
-README is this file
+```
+Expense-Tracker-Ass2/
+├── frontend/          React + Vite SPA (UI, routing, API calls)
+│   └── src/
+│       ├── pages/     Login and Dashboard pages
+│       ├── components/ TopBar, ExpenseActions, ExpenseDetails, CategorySummary, Trends
+│       └── styles/    CSS stylesheets
+├── backend/           Python FastAPI REST API
+│   ├── routers/       auth, expenses, admin endpoints
+│   ├── middleware/    JWT authentication and role enforcement
+│   ├── models.py      SQLAlchemy ORM models (User, Expense, UserActivity)
+│   ├── schemas.py     Pydantic request/response validation
+│   ├── auth_utils.py  Password hashing and JWT creation
+│   └── main.py        App entry point, CORS, router registration
+├── database/          MySQL schema dump
+└── README.md
+```
 
-6. Challenges and Solutions
+---
 
-The hardest challenge for me was frontend section due to the combination of JavaScript and HTML and CSS. Even though HTML is handled in JS as jsx, I didn't understand how to write HTML in JS by using react. The solution was not smart way but simply repeatedly searching what I want to do and trying. If I face errors, just keep searching and trying new way... It took so much time but I could gain the great experience for JS and HTML and CSS. I also didn't know how to connect frontend to database even though I learned how to make database in the las semester. 
+## 6. Challenges and Solutions
+
+### Frontend (Kota)
+The hardest challenge was the frontend section, due to the combination of JavaScript, HTML, and CSS. Even though HTML is handled in JS as JSX, understanding how to write HTML inside JavaScript using React was a steep learning curve. The solution was to repeatedly search for what was needed and keep trying. Errors were resolved through research and iteration. It took significant time but resulted in a strong understanding of React, JS, HTML, and CSS. Connecting the frontend to the database through an API was also a new concept that required learning.
+
+### Database (Felix)
+
+**Navigating the project stack:**
+One challenge was understanding the layout of the full stack, particularly the relationship between the database, backend, and middleware layers. Because different team members were responsible for different parts, coordination was important. This required learning how to communicate with the person working on the middleware and backend to ensure the database schema matched what the API expected.
+
+**GitHub workflow:**
+There were learning curves around creating branches, understanding how to commit, and merging changes back into main through pull requests. The solution was consulting teammates and working through it hands-on. Once the process was understood, it became straightforward.
+
+**Authentication setup:**
+The authentication flow was initially confusing because some existing code was producing incorrect server responses. The Swagger UI authorization dialog (OAuth2 form) was not compatible with how the login endpoint worked. The fix involved reprogramming the auth middleware to use HTTPBearer, which allowed tokens to be pasted directly into the Swagger UI for testing.
+
+**Learning MySQL:**
+Coming from MongoDB, MySQL's relational structure and the MySQL Workbench UI felt more complex at first. The approach was to focus on learning only the core features needed for the project — creating tables, running SELECT queries, and verifying data — which made the tool manageable and effective for the assignment.
