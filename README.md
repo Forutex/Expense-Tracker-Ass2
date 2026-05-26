@@ -92,3 +92,24 @@ The authentication flow was initially confusing because some existing code was p
 
 **Learning MySQL:**
 Coming from MongoDB, MySQL's relational structure and the MySQL Workbench UI felt more complex at first. The approach was to focus on learning only the core features needed for the project — creating tables, running SELECT queries, and verifying data — which made the tool manageable and effective for the assignment.
+
+---
+
+## 7. Workload Allocation
+
+### Felix — Database & Project Management
+
+I was responsible for setting up the MySQL database and making sure the schema matched what the backend needed, as well as keeping track of the project documentation.
+
+**Files written / owned:**
+- `database/expensetracker.sql` — the MySQL schema dump covering all three tables (users, expenses, user_activities), so anyone on the team can recreate the database locally
+- `README.md` — wrote and maintained the project documentation throughout the assignment
+
+**Files contributed to:**
+- `backend/auth_utils.py` — fixed a compatibility issue between passlib and Python 3.14 that was causing registration and login to crash with a 500 error; replaced it with direct bcrypt calls
+- `backend/middleware/auth_middleware.py` — fixed the Swagger UI authorisation so that JWT tokens could actually be used to test the protected endpoints during development
+
+**Key decisions:**
+- Set up the three-table schema (users, expenses, user_activities) with foreign keys linking expenses and activity logs back to users, so data is properly isolated per account
+- Kept the `.env` file out of version control so the database password and secret key are never exposed in the repository
+- Exported the schema as a SQL dump file so the database can be fully recreated from scratch without any manual setup
