@@ -92,3 +92,104 @@ The authentication flow was initially confusing because some existing code was p
 
 **Learning MySQL:**
 Coming from MongoDB, MySQL's relational structure and the MySQL Workbench UI felt more complex at first. The approach was to focus on learning only the core features needed for the project — creating tables, running SELECT queries, and verifying data — which made the tool manageable and effective for the assignment.
+
+### Middleware & Security (Mark)
+
+The main challenge was figuring out how to share auth logic across all the routes without copy-pasting it everywhere. FastAPI's `Depends()` solved this — `get_current_user` runs JWT validation automatically on any endpoint that uses it, and `admin_required` just builds on top for role checks.
+
+Swagger's "Authorize" button also caused issues at first because the OAuth2 form it expected didn't match the JSON login endpoint. Fix was adding a separate `/auth/token` endpoint that handles OAuth2 form-data, while keeping `/auth/login` JSON for the React frontend.
+
+Also spent time getting the small things right — 401 vs 403 status codes, moving secrets to a `.env` file, and adding global exception handlers so errors return clean JSON instead of stack traces.
+---
+
+## 7. How to Run
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- MySQL 8+
+
+### Backend Setup
+
+From the `backend/` folder:
+
+    python -m venv venv
+
+Activate the virtual environment:
+
+    # Mac/Linux:
+    source venv/bin/activate
+
+    # Windows:
+    .\venv\Scripts\Activate.ps1
+
+Install dependencies:
+
+    pip install -r requirements.txt
+
+Create a `.env` file in the `backend/` directory with the following variables:
+
+    DATABASE_URL=mysql+pymysql://root:YOUR_PASSWORD@localhost/expense_tracker
+    SECRET_KEY=YOUR_RANDOM_SECRET_KEY
+    ALGORITHM=HS256
+    ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+Create the MySQL database and import the schema:
+
+    mysql -u root -p
+    CREATE DATABASE expense_tracker;
+    EXIT;
+    mysql -u root -p expense_tracker < database/schema.sql
+
+Run the backend server:
+
+    uvicorn main:app --reload
+
+The backend will be available at `http://localhost:8000`. Interactive API documentation is auto-generated at `http://localhost:8000/docs`.
+
+### Frontend Setup
+
+From the `frontend/` folder:
+
+    npm install
+    npm run dev
+
+The frontend will be available at `http://localhost:5173`.
+
+---
+
+## 8. Workload Allocation
+
+### Mark — Middleware & Security
+
+Responsible for the authentication, authorization, and cross-cutting infrastructure that all backend features run on top of.
+
+**Files written / owned:**
+- `backend/auth_utils.py` — JWT token generation and bcrypt password hashing utilities
+- `backend/middleware/auth_middleware.py` — `get_current_user` and `admin_required` FastAPI dependencies for protecting endpoints
+- `backend/config.py` — environment-based settings management using pydantic-settings
+- `backend/activity_utils.py` — activity logging helper for the `user_activity` entity
+- `backend/main.py` — application entry point, CORS configuration, global exception handlers
+- `backend/routers/auth.py` — register, login, logout, and `/auth/token` (Swagger OAuth2) endpoints
+- `.gitignore` — environment-based secrets management
+
+**Files contributed to:**
+- `backend/routers/expenses.py` — added activity logging on create, update, delete
+- `backend/routers/admin.py` — added activity logging on admin user update and delete
+
+**Key technical decisions:**
+- Used FastAPI dependency injection (`Depends`) instead of decorators for authentication, enabling clean composition — `admin_required` builds on top of `get_current_user` rather than duplicating logic
+- Implemented bcrypt for password hashing (industry-standard, slow-by-design to resist brute-force attacks)
+- Used JWT with HS256 for stateless authentication, compatible with a React/SPA frontend architecture
+- Distinguished 401 (unauthenticated) from 403 (authenticated but forbidden) for correct HTTP semantics
+- Added a separate `/auth/token` endpoint using OAuth2 form-data for Swagger UI's "Authorize" button, while keeping `/auth/login` JSON-based for the React frontend — both share the same JWT generation and activity logging
+- Global exception handlers catch unhandled errors and return clean JSON responses instead of leaking stack traces to clients
+
+### Ashley — Frontend
+*[Ashley to complete — list of files written and key decisions]*
+
+### Kota — Backend Features & CRUD
+*[Kota to complete — list of files written and key decisions]*
+
+### Felix — Database & Project Management
+*[Felix to complete — list of files written and key decisions]*
