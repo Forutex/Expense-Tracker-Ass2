@@ -76,8 +76,12 @@ Expense-Tracker-Ass2/
 
 ## 6. Challenges and Solutions
 
-### Frontend (Kota)
+### Frontend (Ashley)
 The hardest challenge was the frontend section, due to the combination of JavaScript, HTML, and CSS. Even though HTML is handled in JS as JSX, understanding how to write HTML inside JavaScript using React was a steep learning curve. The solution was to repeatedly search for what was needed and keep trying. Errors were resolved through research and iteration. It took significant time but resulted in a strong understanding of React, JS, HTML, and CSS. Connecting the frontend to the database through an API was also a new concept that required learning.
+
+### Backend Features (Kota)
+
+One of the main challenges was how to connect the frontend expense actions to the FastAPI backend and making sure the data was correctly stored in MySQL. To connect the backend and frontend correctly, we need to align on key integration points such as API endpoints, request and response formats, authentication tokens, database-related field names, and error handling. The solution was simply communicating with a member who's building frontend so that we can use common elements.
 
 ### Database (Felix)
 
@@ -207,7 +211,23 @@ Responsible for the authentication, authorization, and cross-cutting infrastruct
 - Expense search function: filters existing expenses array to return matching expenses
 
 ### Kota — Backend Features & CRUD
-*[Kota to complete — list of files written and key decisions]*
+
+I was in charge of most part of backend except for middleware-related things.
+
+**Files written / owned:**
+- `backend/routers/expenses.py` — expense CRUD endpoints for adding, retrieving, updating, and deleting expenses
+- `backend/schemas.py` — Pydantic schemas for validating expense request and response data
+- `backend/models.py` — SQLAlchemy `Expense` model and relationship between users and expenses
+
+**Files contributed to:**
+- `backend/main.py` — helped connect the expense router to the FastAPI application
+- `backend/database.py` — used the shared SQLAlchemy database session setup for expense operations
+
+**Key technical decisions:**
+- Used SQLAlchemy ORM instead of writing raw SQL directly, making database operations easier to maintain and safer to structure
+- Connected each expense to the currently logged-in user using `user_id`, so users only see and modify their own records
+- Used Pydantic schemas to validate incoming expense data before saving it to MySQL
+- Designed the backend expense logic to support frontend features such as total expense calculation, category summaries, and trend analysis
 
 ### Felix — Database & Project Management
 
