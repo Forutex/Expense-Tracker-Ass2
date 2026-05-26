@@ -210,7 +210,7 @@ Responsible for the authentication, authorization, and cross-cutting infrastruct
 - Admin search functions: connects with backend to return matching records
 - Expense search function: filters existing expenses array to return matching expenses
 
-### Kota — Backend Features & CRUD
+### Kota — Backend Features
 
 I was in charge of most part of backend except for middleware-related things.
 
