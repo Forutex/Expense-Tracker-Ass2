@@ -11,12 +11,14 @@ Design rationale:
   it needs.
 - admin_required composes get_current_user, so admin-only routes get both
   authentication and authorization in one parameter.
+- OAuth2PasswordBearer integrates with Swagger UI's "Authorize" button,
+  enabling interactive testing of protected endpoints from the docs page.
 - Errors raise HTTPException with appropriate status codes (401 vs 403) to
   distinguish "not logged in" from "logged in but not allowed".
 """
 
-from fastapi import Depends, HTTPException, Security, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
@@ -25,14 +27,21 @@ from database import get_db
 from models import User
 
 
-http_bearer = HTTPBearer()
+# Tells FastAPI to expect a Bearer token in the Authorization header.
+# tokenUrl is used by Swagger UI's "Authorize" button to know where to log in.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Security(http_bearer),
+    token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
-    token = credentials.credentials
+    """
+    Decode the JWT, look up the user, and return them.
+
+    Raises 401 if the token is missing, invalid, expired, or the user
+    no longer exists in the database.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

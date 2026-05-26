@@ -1,40 +1,125 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-const welcomeMessage = "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
+const welcomeMessage =
+  "Welcome to the Expense Tracker! Please log in or sign up to manage your expenses.";
 
 function Login() {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    // Simulate login logic here (e.g., API call)
-    // For demonstration, we'll just navigate to the dashboard
-    navigate("/dashboard");
-  };
 
   const [loginForm, setLoginForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setLoginForm((prev) => ({ ...prev, [name]: value }));
+
+    setLoginForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginForm),
+      });
+
+      if (!res.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const data = await res.json();
+
+      localStorage.setItem("token", data.access_token);
+
+      const decoded = jwtDecode(data.access_token);
+
+      localStorage.setItem("user", JSON.stringify(decoded));
+      
+      if (decoded.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+
+      console.log("Login successful");
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Login failed. Please check your details.");
+    }
   };
 
   return (
-    <><div className="app">
-      <h1>Expense Tracker</h1>
-      {welcomeMessage}
-    </div><div className="login-container">
-      <h2>Login</h2>
-      <input type="text" placeholder="Username" />
-      <input type="password" placeholder="Password" />
-      <button className="login-action" onClick={handleLogin}>
-        Log In
-      </button>
-      <p>Don't have an account? <a href="#">Sign up</a></p>
-      </div></>
+    <div className="app">
+      <div className="login-container">
+        <div className="login">
+          <header>
+            <h1>Expense Tracker</h1>
+            <p>{welcomeMessage}</p>
+          </header>
+
+          <form className="loginform" onSubmit={handleLogin}>
+            <div className="input-group">
+              <label htmlFor="email">Email</label>
+
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={loginForm.email}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="password">Password</label>
+
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                value={loginForm.password}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {errorMessage && (
+              <p className="error-message">
+                {errorMessage}
+              </p>
+            )}
+
+            <button type="submit">
+              Log In
+            </button>
+
+            {errorMessage && (
+              <p style={{ color: "red" }}>{errorMessage}</p>
+            )}
+          </form>
+
+          <p>
+            Don't have an account?{" "}
+            <a href="/signup">Sign up</a>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 

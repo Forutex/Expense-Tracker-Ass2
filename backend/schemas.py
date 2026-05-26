@@ -1,3 +1,4 @@
+#Declaring the strcuture of the data receiving from API and sending to API on Python classes.
 from datetime import date, datetime
 from typing import Optional
 

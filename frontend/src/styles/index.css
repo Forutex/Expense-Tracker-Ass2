@@ -2,7 +2,7 @@
 .login-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   padding: 24px;
 }
 
@@ -23,6 +23,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  color: var(--text-h);
 }
 
 .loginform {
@@ -49,11 +54,135 @@
   cursor: pointer;
 }
 
+/*admin dashboard*/
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 0;
+}
+
+.logout-btn {
+  background: #c084fc;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-card {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-table-header,
+.admin-table-row {
+  display: grid;
+  grid-template-columns: 60px 1.5fr 2fr 120px 3fr;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.admin-table-header {
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expense-list,
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expense-item,
+.activity-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 /*expense tracker*/
 
+.view-mode-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trends-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.page-header {
+  display: flex;
+  justify-content: flex-end; 
+  padding: 20px 24px 10px;  
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.search {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.search input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
 .top-bar,
 .middle-bar,
+.search,
 .overviews,
 .trends {
   width: 100%;
@@ -403,4 +532,144 @@ p {
 
 * {
   box-sizing: border-box;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+.expense-table,
+.category-content {
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+
+  #root {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .app {
+    gap: 16px;
+    padding: 0;
+  }
+
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logout-btn {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    align-self: flex-end;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .top-left,
+  .top-right {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .periods-controls {
+    flex-wrap: wrap;
+  }
+
+  .add-form {
+    grid-template-columns: 1fr;
+  }
+
+  .overviews {
+    grid-template-columns: 1fr;
+  }
+
+  .details-header,
+  .details-row {
+    grid-template-columns: 1fr 1fr;
+    font-size: 0.9rem;
+  }
+
+  .category-summary-header,
+  .category-summary-row {
+    grid-template-columns: 1fr 1fr;
+    font-size: 0.9rem;
+  }
+
+  .expense-details,
+  .category-summary {
+    min-height: auto;
+    max-height: none;
+  }
+
+  .expense-action {
+    flex-direction: column;
+  }
+
+  .search,
+  .top-bar,
+  .middle-bar,
+  .overviews,
+  .trends {
+    padding: 16px;
+  }
+
+  .total-summary {
+    font-size: 1.5rem;
+  }
+
+  .view-mode-btn,
+  .action-btn,
+  .trends-btn {
+    width: 100%;
+  }
+
+  .admin-table-header,
+  .admin-table-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .expense-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .admin-search {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+  }
+
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .activity-item {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
 }
