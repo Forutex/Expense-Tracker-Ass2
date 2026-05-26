@@ -100,6 +100,7 @@ The main challenge was figuring out how to share auth logic across all the route
 Swagger's "Authorize" button also caused issues at first because the OAuth2 form it expected didn't match the JSON login endpoint. Fix was adding a separate `/auth/token` endpoint that handles OAuth2 form-data, while keeping `/auth/login` JSON for the React frontend.
 
 Also spent time getting the small things right — 401 vs 403 status codes, moving secrets to a `.env` file, and adding global exception handlers so errors return clean JSON instead of stack traces.
+
 ---
 
 ## 7. How to Run
@@ -186,6 +187,7 @@ Responsible for the authentication, authorization, and cross-cutting infrastruct
 - Global exception handlers catch unhandled errors and return clean JSON responses instead of leaking stack traces to clients
 
 ### Ashley — Frontend
+
 **Files written / owned:**
 - `ProtectedRoute.jsx` - protects pages that require authentication (expense dashboard, admin dashboard)
 - `AdminDashboard.jsx` - dashboard for Admin to update user details and view user activities
@@ -199,8 +201,8 @@ Responsible for the authentication, authorization, and cross-cutting infrastruct
 
 **Key technical decisions:**
 - Incorporating error handling - Ensuring there are error messages when a user causes an error, e.g. wrong login information
-- Route guard - checking user tokens and redirecting the user to the login page if there's no token, and renders pages correctly according to user 
-- Routing configuration - using React Router and protected routes so that the correct components are rendered, only logged in users can access expense dashboard 
+- Route guard - checking user tokens and redirecting the user to the login page if there's no token, and renders pages correctly according to user
+- Routing configuration - using React Router and protected routes so that the correct components are rendered, only logged in users can access expense dashboard
 - Admin search functions: connects with backend to return matching records
 - Expense search function: filters existing expenses array to return matching expenses
 
@@ -208,4 +210,22 @@ Responsible for the authentication, authorization, and cross-cutting infrastruct
 *[Kota to complete — list of files written and key decisions]*
 
 ### Felix — Database & Project Management
-*[Felix to complete — list of files written and key decisions]*
+
+I was in charge of setting up and maintaining the MySQL database, making sure the schema matched what the backend needed, and keeping the project documentation up to date.
+
+**Files written / owned:**
+- `database/expensetracker.sql` — the MySQL schema dump covering all three tables (users, expenses, user_activities), so anyone on the team can recreate the database locally
+- `README.md` — wrote and maintained the project documentation throughout the assignment
+
+**Files contributed to:**
+- `backend/auth_utils.py` — fixed a compatibility issue between passlib and Python 3.14 that was causing registration and login to crash with a 500 error; replaced it with direct bcrypt calls
+- `backend/middleware/auth_middleware.py` — fixed the Swagger UI authorisation so that JWT tokens could be used to test the protected endpoints during development
+
+**Key decisions:**
+- Set up the three-table schema (users, expenses, user_activities) with foreign keys linking expenses and activity logs back to users, so data is properly isolated per account
+- Kept the `.env` file out of version control so the database password and secret key are never exposed in the repository
+- Exported the schema as a SQL dump file so the database can be fully recreated from scratch without any manual setup
+
+---
+
+
