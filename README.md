@@ -186,7 +186,23 @@ Responsible for the authentication, authorization, and cross-cutting infrastruct
 - Global exception handlers catch unhandled errors and return clean JSON responses instead of leaking stack traces to clients
 
 ### Ashley — Frontend
-*[Ashley to complete — list of files written and key decisions]*
+**Files written / owned:**
+- `ProtectedRoute.jsx` - protects pages that require authentication (expense dashboard, admin dashboard)
+- `AdminDashboard.jsx` - dashboard for Admin to update user details and view user activities
+- `Login.jsx` - login page that navigates user to expense tracker or admin dashboard (by checking user role)
+- `Signup.jsx` - sign up page for the user to create an account
+
+**Files contributed to:**
+- `Dashboard.jsx` - the original expense tracker (made by Kota) - minimal changes, I added a logout button and search function
+- `App.jsx` - routing configuration, maps URL to pages
+- `index.css` - used for styling the login, signup, dashboard, and admin dashboard pages
+
+**Key technical decisions:**
+- Incorporating error handling - Ensuring there are error messages when a user causes an error, e.g. wrong login information
+- Route guard - checking user tokens and redirecting the user to the login page if there's no token, and renders pages correctly according to user 
+- Routing configuration - using React Router and protected routes so that the correct components are rendered, only logged in users can access expense dashboard 
+- Admin search functions: connects with backend to return matching records
+- Expense search function: filters existing expenses array to return matching expenses
 
 ### Kota — Backend Features & CRUD
 *[Kota to complete — list of files written and key decisions]*
