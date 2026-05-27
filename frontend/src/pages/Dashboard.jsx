@@ -374,6 +374,7 @@ function ExpenseTracker() {
     return matchesPeriod;
   });
 
+  //search function 
   const searchResults = filteredExpenses.filter((expense) => {
     if (!isSearching) return false;
 
@@ -567,6 +568,7 @@ function ExpenseTracker() {
         handleDelete={handleDelete}
       />
 
+{/*search bar*/}
       <section className="search">
         <h2>Search Expenses</h2>
 

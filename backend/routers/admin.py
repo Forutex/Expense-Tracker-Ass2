@@ -117,6 +117,9 @@ def delete_user(
         f"Admin deleted user id: {user_id} ({existing_user.email})"
     )
 
+    db.query(Expense).filter(Expense.user_id == user_id).delete()
+    db.query(UserActivity).filter(UserActivity.user_id == user_id).delete()
+    
     db.delete(existing_user)
     db.commit()
 
